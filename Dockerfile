@@ -23,4 +23,4 @@ RUN npm install -g serve
 EXPOSE $PORT
 
 # Start the application
-CMD ["sh", "-c", "serve -s build -l ${PORT:-3000}"]
+CMD ["node", "server.js"]
