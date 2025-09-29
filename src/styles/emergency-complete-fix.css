@@ -2460,6 +2460,54 @@ body .nextgen-grid.nextgen-grid-4 {
   margin-bottom: 32px !important;
 }
 
+body .nextgen-grid.nextgen-grid-5 {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 32px !important;
+  margin-bottom: 32px !important;
+}
+
+/* BUDGET OVERVIEW ENHANCEMENTS */
+body .nextgen-card .nextgen-card-body[style*="padding: 24px"] > div[style*="display: grid"] > div {
+  cursor: pointer !important;
+}
+
+body .nextgen-card .nextgen-card-body[style*="padding: 24px"] > div[style*="display: grid"] > div:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3) !important;
+  border-color: #6366f1 !important;
+}
+
+/* BUDGET PROGRESS BAR ANIMATIONS */
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: var(--progress-width); }
+}
+
+body .nextgen-card .nextgen-card-body div[style*="linear-gradient(90deg"] {
+  animation: progressFill 1s ease-out !important;
+}
+
+/* BUDGET ICON HOVER EFFECTS */
+body .nextgen-card .nextgen-card-body div[style*="width: 48px"][style*="height: 48px"] {
+  transition: all 0.3s ease !important;
+}
+
+body .nextgen-card .nextgen-card-body div:hover div[style*="width: 48px"][style*="height: 48px"] {
+  transform: scale(1.1) rotate(5deg) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* BUDGET STATUS BADGE PULSE */
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+body .nextgen-card .nextgen-card-body div[style*="Over Budget"] {
+  animation: statusPulse 2s infinite !important;
+}
+
 /* SHOWCASE METRIC CARDS */
 body .nextgen-grid .nextgen-card {
   background: rgba(30, 33, 57, 0.8) !important;
@@ -2524,11 +2572,31 @@ body .nextgen-badge {
   body .nextgen-grid.nextgen-grid-4 {
     grid-template-columns: repeat(2, 1fr) !important;
   }
+  
+  body .nextgen-grid.nextgen-grid-5 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  body .nextgen-grid.nextgen-grid-5 .nextgen-card[style*="span 2"] {
+    grid-column: span 2 !important;
+  }
+  
+  body .nextgen-grid.nextgen-grid-5 .nextgen-card[style*="span 3"] {
+    grid-column: span 3 !important;
+  }
 }
 
 @media (max-width: 768px) {
   body .nextgen-grid.nextgen-grid-4 {
     grid-template-columns: 1fr !important;
+  }
+  
+  body .nextgen-grid.nextgen-grid-5 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  body .nextgen-grid.nextgen-grid-5 .nextgen-card[style*="span"] {
+    grid-column: span 1 !important;
   }
   
   body .nextgen-metric-value {

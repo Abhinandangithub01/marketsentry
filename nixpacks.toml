@@ -2,10 +2,10 @@
 nixPkgs = ['nodejs-20_x', 'npm-9_x']
 
 [phases.install]
-cmds = ['npm install']
+cmds = ['npm ci --omit=dev']
 
 [phases.build]
 cmds = ['npm run build']
 
 [start]
-cmd = 'npm run build && node server.js'
+cmd = 'node server.js'

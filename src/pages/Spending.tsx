@@ -343,7 +343,7 @@ export const Spending: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="nextgen-grid nextgen-grid-3" style={{ gap: '32px' }}>
+      <div className="nextgen-grid nextgen-grid-5" style={{ gap: '32px' }}>
         {/* Spending by Category Chart */}
         <div className="nextgen-card" style={{ gridColumn: 'span 2' }}>
           <div className="nextgen-card-header">
@@ -457,54 +457,197 @@ export const Spending: React.FC = () => {
         </div>
 
         {/* Budget Overview */}
-        <div className="nextgen-card">
+        <div className="nextgen-card" style={{ gridColumn: 'span 3' }}>
           <div className="nextgen-card-header">
             <div className="nextgen-card-title">Budget Overview</div>
             <div className="nextgen-card-subtitle">Monthly budget status</div>
           </div>
-          <div className="nextgen-card-body">
-            {budgets.map((budget) => (
-              <div key={budget.category} style={{
-                marginBottom: '20px',
-                padding: '16px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: '12px',
-                border: '1px solid #374151'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontWeight: '600', color: '#ffffff' }}>
-                    {budget.category}
-                  </span>
-                  <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>
-                    {formatCurrency(budget.spent)} / {formatCurrency(budget.budgeted)}
-                  </span>
-                </div>
-                <div style={{
-                  width: '100%',
-                  height: '8px',
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: `${Math.min((budget.spent / budget.budgeted) * 100, 100)}%`,
-                    height: '100%',
-                    background: budget.spent > budget.budgeted ? '#ef4444' : '#6366f1',
-                    borderRadius: '4px'
-                  }}></div>
-                </div>
-                <div style={{ 
-                  fontSize: '0.75rem', 
-                  color: budget.remaining >= 0 ? '#10b981' : '#ef4444',
-                  marginTop: '4px'
-                }}>
-                  {budget.remaining >= 0 ? 
-                    `${formatCurrency(budget.remaining)} remaining` : 
-                    `${formatCurrency(Math.abs(budget.remaining))} over budget`
-                  }
-                </div>
-              </div>
-            ))}
+          <div className="nextgen-card-body" style={{ padding: '24px' }}>
+            <div style={{ 
+              display: 'grid', 
+              gap: '24px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+            }}>
+              {budgets.map((budget) => {
+                const percentage = (budget.spent / budget.budgeted) * 100;
+                const isOverBudget = budget.spent > budget.budgeted;
+                const categoryIcons: { [key: string]: string } = {
+                  'Food': '🍽️',
+                  'Transportation': '🚗',
+                  'Entertainment': '🎬',
+                  'Shopping': '🛍️',
+                  'Utilities': '⚡',
+                  'Healthcare': '🏥',
+                  'Education': '📚',
+                  'Travel': '✈️'
+                };
+                
+                return (
+                  <div key={budget.category} style={{
+                    padding: '24px',
+                    background: 'rgba(30, 33, 57, 0.8)',
+                    backdropFilter: 'blur(20px)',
+                    borderRadius: '16px',
+                    border: `1px solid ${isOverBudget ? '#ef4444' : '#374151'}`,
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    {/* Background gradient */}
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      background: `linear-gradient(135deg, ${isOverBudget ? 'rgba(239, 68, 68, 0.1)' : 'rgba(99, 102, 241, 0.1)'}, transparent)`,
+                      pointerEvents: 'none'
+                    }}></div>
+                    
+                    {/* Header with icon and category */}
+                    <div style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'space-between',
+                      marginBottom: '16px',
+                      position: 'relative',
+                      zIndex: 1
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '48px',
+                          height: '48px',
+                          borderRadius: '12px',
+                          background: `linear-gradient(135deg, ${isOverBudget ? '#ef4444' : '#6366f1'}, ${isOverBudget ? '#dc2626' : '#8b5cf6'})`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '20px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+                        }}>
+                          {categoryIcons[budget.category] || '💰'}
+                        </div>
+                        <div>
+                          <div style={{ 
+                            fontWeight: '700', 
+                            color: '#ffffff',
+                            fontSize: '1.125rem',
+                            marginBottom: '4px'
+                          }}>
+                            {budget.category}
+                          </div>
+                          <div style={{ 
+                            fontSize: '0.875rem', 
+                            color: '#94a3b8'
+                          }}>
+                            {percentage.toFixed(1)}% used
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Status badge */}
+                      <div style={{
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '0.75rem',
+                        fontWeight: '600',
+                        background: isOverBudget ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                        color: isOverBudget ? '#ef4444' : '#10b981',
+                        border: `1px solid ${isOverBudget ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em'
+                      }}>
+                        {isOverBudget ? 'Over Budget' : 'On Track'}
+                      </div>
+                    </div>
+                    
+                    {/* Amount display */}
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'baseline',
+                      marginBottom: '16px',
+                      position: 'relative',
+                      zIndex: 1
+                    }}>
+                      <div>
+                        <div style={{ 
+                          fontSize: '1.75rem', 
+                          fontWeight: '900', 
+                          color: '#ffffff',
+                          lineHeight: 1
+                        }}>
+                          {formatCurrency(budget.spent)}
+                        </div>
+                        <div style={{ 
+                          fontSize: '0.875rem', 
+                          color: '#94a3b8',
+                          marginTop: '4px'
+                        }}>
+                          of {formatCurrency(budget.budgeted)} budgeted
+                        </div>
+                      </div>
+                      
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ 
+                          fontSize: '1.25rem', 
+                          fontWeight: '700',
+                          color: budget.remaining >= 0 ? '#10b981' : '#ef4444'
+                        }}>
+                          {budget.remaining >= 0 ? '+' : ''}{formatCurrency(budget.remaining)}
+                        </div>
+                        <div style={{ 
+                          fontSize: '0.75rem', 
+                          color: '#94a3b8',
+                          marginTop: '2px'
+                        }}>
+                          {budget.remaining >= 0 ? 'remaining' : 'over budget'}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Enhanced progress bar */}
+                    <div style={{
+                      width: '100%',
+                      height: '12px',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '6px',
+                      overflow: 'hidden',
+                      position: 'relative',
+                      zIndex: 1,
+                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.2)'
+                    }}>
+                      <div style={{
+                        width: `${Math.min(percentage, 100)}%`,
+                        height: '100%',
+                        background: isOverBudget 
+                          ? 'linear-gradient(90deg, #ef4444, #dc2626)' 
+                          : 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                        borderRadius: '6px',
+                        transition: 'width 0.5s ease',
+                        boxShadow: `0 0 8px ${isOverBudget ? 'rgba(239, 68, 68, 0.4)' : 'rgba(99, 102, 241, 0.4)'}`
+                      }}></div>
+                      
+                      {/* Progress indicator */}
+                      {percentage > 5 && (
+                        <div style={{
+                          position: 'absolute',
+                          right: '8px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          fontSize: '0.75rem',
+                          fontWeight: '600',
+                          color: '#ffffff',
+                          textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)'
+                        }}>
+                          {percentage.toFixed(0)}%
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

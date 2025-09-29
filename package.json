@@ -62,7 +62,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "serve": "npm run build && node server.js",
+    "serve": "bash start.sh",
+    "serve-win": "npm run build && node server.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
