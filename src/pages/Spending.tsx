@@ -8,7 +8,22 @@ import { DatePicker } from '@progress/kendo-react-dateinputs';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
 import { Window } from '@progress/kendo-react-dialogs';
 import { SvgIcon } from '@progress/kendo-react-common';
-import { chartLineIcon } from '@progress/kendo-svg-icons';
+import { 
+  chartLineIcon,
+  dollarIcon,
+  carIcon,
+  filmIcon,
+  cartIcon,
+  boldIcon,
+  heartIcon,
+  bookIcon,
+  paperPlaneIcon,
+  homeIcon,
+  folderIcon,
+  calculatorIcon,
+  caretAltUpIcon,
+  allIcon
+} from '@progress/kendo-svg-icons';
 
 interface Expense {
   id: string;
@@ -343,9 +358,16 @@ export const Spending: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="nextgen-grid nextgen-grid-5" style={{ gap: '32px' }}>
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '32px',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        width: '100%'
+      }}>
         {/* Spending by Category Chart */}
-        <div className="nextgen-card" style={{ gridColumn: 'span 2' }}>
+        <div className="nextgen-card" style={{ width: '100%' }}>
           <div className="nextgen-card-header">
             <div className="nextgen-card-title">Spending by Category</div>
             <div className="nextgen-card-subtitle">Current month breakdown</div>
@@ -353,16 +375,24 @@ export const Spending: React.FC = () => {
           <div className="nextgen-card-body">
             {/* Custom SVG Pie Chart for Spending Categories */}
             <div style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
+              display: 'grid', 
+              gridTemplateColumns: '1.2fr 0.8fr',
               alignItems: 'center', 
-              height: '300px',
+              height: '320px',
               background: 'rgba(30, 33, 57, 0.8)',
               borderRadius: '12px',
-              position: 'relative'
+              position: 'relative',
+              padding: '20px',
+              gap: '20px'
             }}>
               {categoryData.length > 0 ? (
-                <svg width="250" height="250" viewBox="0 0 250 250">
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center',
+                  height: '100%'
+                }}>
+                  <svg width="260" height="260" viewBox="0 0 260 260">
                   {(() => {
                     const total = categoryData.reduce((sum, item) => sum + item.amount, 0);
                     let currentAngle = 0;
@@ -394,19 +424,20 @@ export const Spending: React.FC = () => {
                         })}
                         
                         {/* Center text */}
-                        <text x="125" y="110" textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="600">
+                        <text x="130" y="120" textAnchor="middle" fill="#ffffff" fontSize="14" fontWeight="600">
                           Total Spent
                         </text>
-                        <text x="125" y="130" textAnchor="middle" fill="#ffffff" fontSize="16" fontWeight="700">
+                        <text x="130" y="135" textAnchor="middle" fill="#ffffff" fontSize="16" fontWeight="700">
                           {formatCurrency(total)}
                         </text>
-                        <text x="125" y="145" textAnchor="middle" fill="#94a3b8" fontSize="11">
+                        <text x="130" y="150" textAnchor="middle" fill="#94a3b8" fontSize="11">
                           This Month
                         </text>
                       </>
                     );
                   })()}
                 </svg>
+                </div>
               ) : (
                 <div style={{ textAlign: 'center', color: '#94a3b8' }}>
                   <div style={{ fontSize: '48px', marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
@@ -415,49 +446,96 @@ export const Spending: React.FC = () => {
                   <div>No expenses to display</div>
                 </div>
               )}
-            </div>
-            
-            {/* Legend */}
-            {categoryData.length > 0 && (
-              <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+              
+              {/* Legend - Second Column */}
+              {categoryData.length > 0 && (
+                <div style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  justifyContent: 'center',
+                  gap: '16px',
+                  height: '100%',
+                  paddingLeft: '8px'
+                }}>
                 {categoryData.map((item, index) => {
                   const colors = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
                   const total = categoryData.reduce((sum, cat) => sum + cat.amount, 0);
                   const percentage = ((item.amount / total) * 100).toFixed(1);
                   
+                  // Category icons mapping
+                  const getCategoryIcon = (category: string) => {
+                    const iconMap: { [key: string]: any } = {
+                      'Food': dollarIcon,
+                      'Transportation': carIcon,
+                      'Entertainment': filmIcon,
+                      'Shopping': cartIcon,
+                      'Utilities': boldIcon,
+                      'Healthcare': heartIcon,
+                      'Education': bookIcon,
+                      'Travel': paperPlaneIcon,
+                      'Other': allIcon
+                    };
+                    return iconMap[category] || dollarIcon;
+                  };
+                  
                   return (
                     <div key={item.category} style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: '8px',
-                      padding: '8px 12px',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      borderRadius: '8px'
+                      gap: '12px',
+                      padding: '12px 16px',
+                      background: `linear-gradient(135deg, ${colors[index % colors.length]}15, ${colors[index % colors.length]}08)`,
+                      borderRadius: '12px',
+                      border: `1px solid ${colors[index % colors.length]}30`,
+                      transition: 'all 0.3s ease'
                     }}>
+                      {/* Icon and color indicator */}
                       <div style={{
-                        width: '12px',
-                        height: '12px',
-                        borderRadius: '50%',
-                        background: colors[index % colors.length]
-                      }}></div>
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '10px',
+                        background: `linear-gradient(135deg, ${colors[index % colors.length]}, ${colors[index % colors.length]}CC)`,
+                        boxShadow: `0 4px 12px ${colors[index % colors.length]}40`
+                      }}>
+                        <SvgIcon 
+                          icon={getCategoryIcon(item.category)} 
+                          size="medium" 
+                          style={{ color: '#ffffff' }}
+                        />
+                      </div>
+                      
+                      {/* Category info */}
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '0.875rem', fontWeight: '500', color: '#ffffff' }}>
+                        <div style={{ 
+                          fontSize: '0.9rem', 
+                          fontWeight: '600', 
+                          color: '#ffffff',
+                          marginBottom: '2px'
+                        }}>
                           {item.category}
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                        <div style={{ 
+                          fontSize: '0.8rem', 
+                          color: colors[index % colors.length],
+                          fontWeight: '500'
+                        }}>
                           {formatCurrency(item.amount)} ({percentage}%)
                         </div>
                       </div>
                     </div>
                   );
                 })}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Budget Overview */}
-        <div className="nextgen-card" style={{ gridColumn: 'span 3' }}>
+        <div className="nextgen-card" style={{ width: '100%' }}>
           <div className="nextgen-card-header">
             <div className="nextgen-card-title">Budget Overview</div>
             <div className="nextgen-card-subtitle">Monthly budget status</div>
@@ -466,20 +544,23 @@ export const Spending: React.FC = () => {
             <div style={{ 
               display: 'grid', 
               gap: '24px',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))'
             }}>
               {budgets.map((budget) => {
                 const percentage = (budget.spent / budget.budgeted) * 100;
                 const isOverBudget = budget.spent > budget.budgeted;
-                const categoryIcons: { [key: string]: string } = {
-                  'Food': '🍽️',
-                  'Transportation': '🚗',
-                  'Entertainment': '🎬',
-                  'Shopping': '🛍️',
-                  'Utilities': '⚡',
-                  'Healthcare': '🏥',
-                  'Education': '📚',
-                  'Travel': '✈️'
+                const getBudgetCategoryIcon = (category: string) => {
+                  const iconMap: { [key: string]: any } = {
+                    'Food': dollarIcon,
+                    'Transportation': carIcon,
+                    'Entertainment': filmIcon,
+                    'Shopping': cartIcon,
+                    'Utilities': boldIcon,
+                    'Healthcare': heartIcon,
+                    'Education': bookIcon,
+                    'Travel': paperPlaneIcon
+                  };
+                  return iconMap[category] || dollarIcon;
                 };
                 
                 return (
@@ -522,10 +603,13 @@ export const Spending: React.FC = () => {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '20px',
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
                         }}>
-                          {categoryIcons[budget.category] || '💰'}
+                          <SvgIcon 
+                            icon={getBudgetCategoryIcon(budget.category)} 
+                            size="large" 
+                            style={{ color: '#ffffff' }}
+                          />
                         </div>
                         <div>
                           <div style={{ 
@@ -615,17 +699,19 @@ export const Spending: React.FC = () => {
                       overflow: 'hidden',
                       position: 'relative',
                       zIndex: 1,
-                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.2)'
+                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.2)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)'
                     }}>
                       <div style={{
-                        width: `${Math.min(percentage, 100)}%`,
+                        width: `${Math.max(Math.min(percentage, 100), 5)}%`,
                         height: '100%',
                         background: isOverBudget 
-                          ? 'linear-gradient(90deg, #ef4444, #dc2626)' 
-                          : 'linear-gradient(90deg, #6366f1, #8b5cf6)',
+                          ? 'linear-gradient(90deg, #ef4444, #dc2626) !important' 
+                          : 'linear-gradient(90deg, #22c55e, #16a34a) !important',
                         borderRadius: '6px',
                         transition: 'width 0.5s ease',
-                        boxShadow: `0 0 8px ${isOverBudget ? 'rgba(239, 68, 68, 0.4)' : 'rgba(99, 102, 241, 0.4)'}`
+                        boxShadow: `0 0 8px ${isOverBudget ? 'rgba(239, 68, 68, 0.4)' : 'rgba(34, 197, 94, 0.4)'}`,
+                        minWidth: '8px'
                       }}></div>
                       
                       {/* Progress indicator */}

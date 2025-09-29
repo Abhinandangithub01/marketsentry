@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar } from '@progress/kendo-react-dateinputs';
+import { DatePicker } from '@progress/kendo-react-dateinputs';
 import { Card, CardBody, CardHeader, CardTitle } from '@progress/kendo-react-layout';
 import { Badge } from '@progress/kendo-react-indicators';
 import { Button } from '@progress/kendo-react-buttons';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
 import { Input } from '@progress/kendo-react-inputs';
+import { SvgIcon } from '@progress/kendo-react-common';
+import { calendarIcon, caretAltLeftIcon, caretAltRightIcon } from '@progress/kendo-svg-icons';
 
 interface EconomicEvent {
   id: string;
@@ -285,11 +287,193 @@ export const EconomicCalendarModern: React.FC = () => {
             <div className="nextgen-card-subtitle">Select a date to view events</div>
           </div>
           <div className="nextgen-card-body">
-            <div style={{ width: '100%', maxWidth: '100%' }}>
-              <Calendar
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.value || new Date())}
-              />
+            {/* Custom Calendar Implementation */}
+            <div style={{
+              background: 'rgba(30, 33, 57, 0.95)',
+              border: '1px solid #6366f1',
+              borderRadius: '12px',
+              padding: '16px',
+              marginBottom: '24px'
+            }}>
+              {/* Calendar Header */}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px',
+                padding: '12px 16px',
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                borderRadius: '8px',
+                color: '#ffffff'
+              }}>
+                <Button
+                  onClick={() => {
+                    const newDate = new Date(selectedDate);
+                    newDate.setMonth(newDate.getMonth() - 1);
+                    setSelectedDate(newDate);
+                  }}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: 'none',
+                    color: '#ffffff',
+                    borderRadius: '6px',
+                    padding: '8px'
+                  }}
+                >
+                  <SvgIcon icon={caretAltLeftIcon} size="small" />
+                </Button>
+                
+                <div style={{
+                  fontSize: '1.125rem',
+                  fontWeight: '600',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <SvgIcon icon={calendarIcon} size="medium" />
+                  {selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                </div>
+                
+                <Button
+                  onClick={() => {
+                    const newDate = new Date(selectedDate);
+                    newDate.setMonth(newDate.getMonth() + 1);
+                    setSelectedDate(newDate);
+                  }}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: 'none',
+                    color: '#ffffff',
+                    borderRadius: '6px',
+                    padding: '8px'
+                  }}
+                >
+                  <SvgIcon icon={caretAltRightIcon} size="small" />
+                </Button>
+              </div>
+
+              {/* Calendar Grid */}
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(7, 1fr)',
+                gap: '4px',
+                marginBottom: '16px'
+              }}>
+                {/* Day Headers */}
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                  <div key={day} style={{
+                    padding: '8px',
+                    textAlign: 'center',
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: '#94a3b8',
+                    background: 'rgba(99, 102, 241, 0.2)',
+                    borderRadius: '6px'
+                  }}>
+                    {day}
+                  </div>
+                ))}
+                
+                {/* Calendar Days */}
+                {(() => {
+                  const year = selectedDate.getFullYear();
+                  const month = selectedDate.getMonth();
+                  const firstDay = new Date(year, month, 1);
+                  const lastDay = new Date(year, month + 1, 0);
+                  const startDate = new Date(firstDay);
+                  startDate.setDate(startDate.getDate() - firstDay.getDay());
+                  
+                  const days = [];
+                  for (let i = 0; i < 42; i++) {
+                    const currentDate = new Date(startDate);
+                    currentDate.setDate(startDate.getDate() + i);
+                    
+                    const isCurrentMonth = currentDate.getMonth() === month;
+                    const isToday = currentDate.toDateString() === new Date().toDateString();
+                    const isSelected = currentDate.toDateString() === selectedDate.toDateString();
+                    const hasEvents = getEventsForDate(currentDate).length > 0;
+                    
+                    days.push(
+                      <button
+                        key={i}
+                        onClick={() => setSelectedDate(new Date(currentDate))}
+                        style={{
+                          padding: '8px',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '0.875rem',
+                          fontWeight: isSelected ? '600' : '400',
+                          color: isCurrentMonth ? '#ffffff' : '#64748b',
+                          background: isSelected 
+                            ? 'linear-gradient(135deg, #6366f1, #8b5cf6)'
+                            : isToday
+                            ? 'rgba(34, 197, 94, 0.2)'
+                            : hasEvents
+                            ? 'rgba(99, 102, 241, 0.1)'
+                            : 'transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          position: 'relative'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = 'rgba(99, 102, 241, 0.2)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = isToday
+                              ? 'rgba(34, 197, 94, 0.2)'
+                              : hasEvents
+                              ? 'rgba(99, 102, 241, 0.1)'
+                              : 'transparent';
+                          }
+                        }}
+                      >
+                        {currentDate.getDate()}
+                        {hasEvents && (
+                          <div style={{
+                            position: 'absolute',
+                            bottom: '2px',
+                            right: '2px',
+                            width: '6px',
+                            height: '6px',
+                            borderRadius: '50%',
+                            background: '#ef4444'
+                          }} />
+                        )}
+                      </button>
+                    );
+                  }
+                  return days;
+                })()}
+              </div>
+
+              {/* Quick Date Selection */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                flexWrap: 'wrap'
+              }}>
+                <Button
+                  onClick={() => setSelectedDate(new Date())}
+                  style={{
+                    background: 'rgba(34, 197, 94, 0.2)',
+                    border: '1px solid #22c55e',
+                    color: '#22c55e',
+                    borderRadius: '6px',
+                    fontSize: '0.75rem',
+                    padding: '6px 12px'
+                  }}
+                >
+                  Today
+                </Button>
+                <DatePicker
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.value || new Date())}
+                  style={{ flex: 1 }}
+                />
+              </div>
             </div>
             
             {/* Filters */}

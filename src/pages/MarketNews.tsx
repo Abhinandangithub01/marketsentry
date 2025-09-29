@@ -676,7 +676,7 @@ export const MarketNews: React.FC = () => {
 
         <TabStripTab title="Market Sentiment">
           <div style={{ padding: '24px 0' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '32px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
               {/* Sentiment Overview */}
               <div style={{
                 background: 'rgba(30, 41, 59, 0.95)',

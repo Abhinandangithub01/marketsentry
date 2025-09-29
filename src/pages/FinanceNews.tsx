@@ -5,7 +5,7 @@ import { Badge } from '@progress/kendo-react-indicators';
 import { Input } from '@progress/kendo-react-inputs';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
 import { TabStrip, TabStripTab } from '@progress/kendo-react-layout';
-import { Calendar } from '@progress/kendo-react-dateinputs';
+import { DatePicker, Calendar } from '@progress/kendo-react-dateinputs';
 import { SvgIcon } from '@progress/kendo-react-common';
 import { 
   bellIcon,
@@ -16,7 +16,10 @@ import {
   clockIcon,
   globeIcon,
   chartLineIcon,
-  infoCircleIcon
+  infoCircleIcon,
+  calendarIcon,
+  caretAltLeftIcon,
+  caretAltRightIcon
 } from '@progress/kendo-svg-icons';
 
 interface FinanceNews {
@@ -502,7 +505,11 @@ export const FinanceNews: React.FC = () => {
 
         <TabStripTab title="Economic Calendar">
           <div style={{ padding: '24px 0' }}>
-            <div className="nextgen-grid nextgen-grid-3" style={{ gap: '32px' }}>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1.5fr 1fr', 
+              gap: '32px' 
+            }}>
               {/* Calendar Widget */}
               <div className="nextgen-card">
                 <div className="nextgen-card-header">
@@ -510,10 +517,18 @@ export const FinanceNews: React.FC = () => {
                   <div className="nextgen-card-subtitle">Select date to view events</div>
                 </div>
                 <div className="nextgen-card-body">
-                  <Calendar
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.value || new Date())}
-                  />
+                  {/* Kendo Calendar - Default Styling */}
+                  <div style={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    display: 'flex',
+                    justifyContent: 'center'
+                  }}>
+                    <Calendar
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.value || new Date())}
+                    />
+                  </div>
                   
                   {/* Event Filters */}
                   <div style={{ marginTop: '24px' }}>

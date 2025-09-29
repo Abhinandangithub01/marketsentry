@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardBody, CardHeader, CardTitle } from '@progress/kendo-react-layout';
 import { Button } from '@progress/kendo-react-buttons';
 import { Input } from '@progress/kendo-react-inputs';
@@ -23,16 +23,16 @@ interface CryptoCoin {
   id: string;
   name: string;
   symbol: string;
-  current_price: number;
-  price_change_percentage_24h: number;
-  market_cap: number;
-  total_volume: number;
+  current_price: number | null;
+  price_change_percentage_24h: number | null;
+  market_cap: number | null;
+  total_volume: number | null;
   image: string;
   market_cap_rank: number;
-  price_change_24h: number;
-  circulating_supply: number;
-  total_supply: number;
-  max_supply: number;
+  price_change_24h: number | null;
+  circulating_supply: number | null;
+  total_supply: number | null;
+  max_supply: number | null;
 }
 
 interface MarketData {
@@ -164,17 +164,17 @@ const Crypto: React.FC = () => {
   };
 
   // Sort coins based on selected criteria
-  const sortedCoins = React.useMemo(() => {
+  const sortedCoins = useMemo(() => {
     return [...cryptoCoins].sort((a, b) => {
       switch (sortBy) {
         case 'market_cap_rank':
           return a.market_cap_rank - b.market_cap_rank;
         case 'current_price':
-          return b.current_price - a.current_price;
+          return (b.current_price ?? 0) - (a.current_price ?? 0);
         case 'price_change_percentage_24h':
-          return b.price_change_percentage_24h - a.price_change_percentage_24h;
+          return (b.price_change_percentage_24h ?? 0) - (a.price_change_percentage_24h ?? 0);
         case 'total_volume':
-          return b.total_volume - a.total_volume;
+          return (b.total_volume ?? 0) - (a.total_volume ?? 0);
         default:
           return a.market_cap_rank - b.market_cap_rank;
       }
@@ -188,12 +188,14 @@ const Crypto: React.FC = () => {
     { text: 'Volume', value: 'total_volume' }
   ];
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | null | undefined) => {
+    if (price === null || price === undefined || isNaN(price)) return '$0.00';
     if (price < 1) return `$${price.toFixed(4)}`;
     return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  const formatMarketCap = (marketCap: number) => {
+  const formatMarketCap = (marketCap: number | null | undefined) => {
+    if (marketCap === null || marketCap === undefined || isNaN(marketCap)) return '$0';
     if (marketCap >= 1e12) return `$${(marketCap / 1e12).toFixed(2)}T`;
     if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(2)}B`;
     if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(2)}M`;
@@ -201,11 +203,17 @@ const Crypto: React.FC = () => {
     return `$${marketCap.toLocaleString()}`;
   };
   
-  const formatVolume = (volume: number) => {
+  const formatVolume = (volume: number | null | undefined) => {
+    if (volume === null || volume === undefined || isNaN(volume)) return '$0';
     if (volume >= 1e9) return `$${(volume / 1e9).toFixed(2)}B`;
     if (volume >= 1e6) return `$${(volume / 1e6).toFixed(2)}M`;
     if (volume >= 1e3) return `$${(volume / 1e3).toFixed(2)}K`;
     return `$${volume.toLocaleString()}`;
+  };
+
+  const formatPercentage = (percentage: number | null | undefined) => {
+    if (percentage === null || percentage === undefined || isNaN(percentage)) return '0.00%';
+    return `${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%`;
   };
 
   const getTimeAgo = (dateString: string) => {
@@ -263,7 +271,7 @@ const Crypto: React.FC = () => {
             </div>
             <div className={`nextgen-metric-change ${(marketData?.market_cap_change_percentage_24h_usd ?? 0) >= 0 ? 'nextgen-metric-positive' : 'nextgen-metric-negative'}`}>
               {marketData && marketData.market_cap_change_percentage_24h_usd !== undefined 
-                ? `${marketData.market_cap_change_percentage_24h_usd >= 0 ? '+' : ''}${marketData.market_cap_change_percentage_24h_usd.toFixed(2)}%` 
+                ? formatPercentage(marketData.market_cap_change_percentage_24h_usd)
                 : 'Loading...'}
             </div>
           </div>
@@ -279,7 +287,7 @@ const Crypto: React.FC = () => {
           <div className="nextgen-metric">
             <div className="nextgen-metric-label">BTC Dominance</div>
             <div className="nextgen-metric-value">
-              {marketData ? `${marketData.market_cap_percentage.btc.toFixed(1)}%` : 'Loading...'}
+              {marketData && marketData.market_cap_percentage?.btc ? `${marketData.market_cap_percentage.btc.toFixed(1)}%` : 'Loading...'}
             </div>
             <div className="nextgen-metric-change">Market Share</div>
           </div>
@@ -416,14 +424,14 @@ const Crypto: React.FC = () => {
                               borderRadius: '12px',
                               fontSize: '0.75rem',
                               fontWeight: '600',
-                              background: coin.price_change_percentage_24h >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-                              color: coin.price_change_percentage_24h >= 0 ? '#10b981' : '#ef4444',
+                              background: (coin.price_change_percentage_24h ?? 0) >= 0 ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                              color: (coin.price_change_percentage_24h ?? 0) >= 0 ? '#10b981' : '#ef4444',
                               display: 'flex',
                               alignItems: 'center',
                               gap: '4px'
                             }}>
-                              <SvgIcon icon={coin.price_change_percentage_24h >= 0 ? caretAltUpIcon : caretAltDownIcon} size="small" />
-                              {coin.price_change_percentage_24h.toFixed(2)}%
+                              <SvgIcon icon={(coin.price_change_percentage_24h ?? 0) >= 0 ? caretAltUpIcon : caretAltDownIcon} size="small" />
+                              {formatPercentage(coin.price_change_percentage_24h)}
                             </span>
                           </div>
                           
