@@ -1,5 +1,5 @@
-# Use Node.js 18 as base image
-FROM node:18-alpine
+# Use Node.js 20 as base image (required for KendoReact)
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (use npm install instead of ci for compatibility)
+RUN npm install --omit=dev
 
 # Copy source code
 COPY . .
@@ -16,11 +16,11 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Install serve to serve the built app
+# Install serve globally
 RUN npm install -g serve
 
-# Expose port
-EXPOSE 3000
+# Expose port (Railway will set PORT env variable)
+EXPOSE $PORT
 
 # Start the application
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["sh", "-c", "serve -s build -l ${PORT:-3000}"]
